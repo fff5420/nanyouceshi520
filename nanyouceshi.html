@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你适合什么类型的男友 · 性格匹配测试</title>
+<style>
+  :root{
+    --ink:#1f1b2e;
+    --muted:#6b6585;
+    --line:#ece9f6;
+    --card:#ffffff;
+    --primary:#6c5ce7;
+    --primary-soft:#f2efff;
+    --pink:#ff6b9d;
+    --ok:#38a169;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#faf9ff;
+    min-height:100vh;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ---------- 背景装饰 ---------- */
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(120% 90% at 8% -10%, #f3eeff 0%, rgba(243,238,255,0) 55%),
+      radial-gradient(100% 80% at 100% 0%, #ffeef5 0%, rgba(255,238,245,0) 55%),
+      radial-gradient(120% 100% at 50% 110%, #eef6ff 0%, rgba(238,246,255,0) 60%);
+  }
+  .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5}
+  .orb.a{width:340px;height:340px;background:#d9ccff;top:-90px;left:-90px}
+  .orb.b{width:300px;height:300px;background:#ffcfe1;top:38%;right:-110px}
+  .orb.c{width:260px;height:260px;background:#c7e6ff;bottom:-90px;left:18%}
+
+  /* ---------- 布局 ---------- */
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:28px 20px 80px}
+  .screen{display:none;animation:fadeUp .5s cubic-bezier(.2,.8,.25,1) both}
+  .screen.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .card{
+    background:var(--card);border-radius:26px;padding:34px 32px;
+    box-shadow:0 24px 70px -28px rgba(76,58,150,.30), 0 2px 6px rgba(76,58,150,.05);
+    border:1px solid rgba(255,255,255,.9);
+  }
+
+  /* ---------- 首页 ---------- */
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#6c5ce7,#ff6b9d)}
+  .brand span{font-size:13px;letter-spacing:.14em;color:var(--muted);font-weight:600}
+  h1{margin:0 0 14px;font-size:38px;line-height:1.25;letter-spacing:-.02em;font-weight:800}
+  h1 .grad{background:linear-gradient(120deg,#6c5ce7 0%,#a06cd5 45%,#ff6b9d 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:16px;margin:0 0 26px}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;background:#f7f5ff;border:1px solid #ece7ff;
+    color:#5a4fb5;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;
+  }
+  .pill i{width:6px;height:6px;border-radius:50%;background:#a394f5;display:block}
+
+  .btn{
+    appearance:none;border:0;cursor:pointer;font-family:inherit;font-weight:700;font-size:16px;
+    padding:16px 34px;border-radius:16px;color:#fff;
+    background:linear-gradient(120deg,#6c5ce7 0%,#8b6ce7 55%,#ff6b9d 130%);
+    box-shadow:0 14px 30px -12px rgba(108,92,231,.75);
+    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 20px 38px -14px rgba(108,92,231,.85)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{
+    background:#fff;color:var(--primary);border:1.5px solid #e2dcff;
+    box-shadow:0 6px 18px -12px rgba(108,92,231,.6);font-size:15px;padding:13px 26px;
+  }
+  .btn.ghost:hover{border-color:#c9bfff;background:#fbfaff}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+  .preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px;padding-top:28px;border-top:1px dashed var(--line)}
+  .pv{text-align:center;padding:14px 6px;border-radius:16px;background:#fbfaff;border:1px solid #f1edff;transition:.2s}
+  .pv:hover{transform:translateY(-3px);background:#fff;border-color:#e3dbff}
+  .pv svg{width:22px;height:22px;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .pv b{display:block;font-size:12.5px;margin-top:7px;font-weight:700;letter-spacing:.02em}
+
+  /* ---------- 答题页 ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .counter{font-size:14px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+  .counter b{color:var(--primary);font-size:19px;margin-right:2px}
+  .track{height:8px;background:#efeafd;border-radius:99px;overflow:hidden;margin-bottom:30px}
+  .track > i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#6c5ce7,#ff6b9d);transition:width .45s cubic-bezier(.2,.8,.25,1)}
+  .qtext{font-size:25px;font-weight:800;line-height:1.45;letter-spacing:-.01em;margin:0 0 26px}
+  .qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.12em;color:#9b90e0;background:#f6f3ff;padding:5px 12px;border-radius:8px;margin-bottom:14px}
+
+  .opts{display:flex;flex-direction:column;gap:12px}
+  .opt{
+    display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+    background:#fff;border:1.5px solid #eeebf9;border-radius:18px;
+    padding:17px 20px;cursor:pointer;font-family:inherit;font-size:16px;color:var(--ink);
+    font-weight:500;line-height:1.55;transition:all .18s ease;position:relative;overflow:hidden;
+  }
+  .opt::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);transform:scaleY(0);transition:transform .2s;transform-origin:center}
+  .opt:hover{border-color:#d6ccff;background:#fdfcff;transform:translateX(3px)}
+  .opt:hover::after{transform:scaleY(1)}
+  .opt .k{
+    flex:0 0 27px;height:27px;border-radius:9px;background:#f4f1ff;color:#6c5ce7;
+    font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;
+    transition:.18s;
+  }
+  .opt:hover .k{background:var(--primary);color:#fff}
+  .opt.sel{border-color:var(--primary);background:#f9f7ff;box-shadow:0 8px 22px -14px rgba(108,92,231,.8)}
+  .opt.sel .k{background:var(--primary);color:#fff}
+  .opt.sel::after{transform:scaleY(1)}
+
+  .navrow{display:flex;justify-content:space-between;align-items:center;margin-top:26px;min-height:44px}
+  .back{
+    background:none;border:0;font-family:inherit;font-size:15px;font-weight:600;color:#8b83b0;
+    cursor:pointer;padding:10px 4px;transition:.18s;
+  }
+  .back:hover{color:var(--primary)}
+  .back[hidden]{visibility:hidden;display:block}
+  .hint{font-size:13.5px;color:#a9a1c6}
+
+  /* ---------- 结果页 ---------- */
+  .res-head{text-align:center;padding-bottom:6px}
+  .ring-wrap{position:relative;width:150px;height:150px;margin:6px auto 18px}
+  .ring{width:150px;height:150px;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:10;stroke-linecap:round}
+  .ring .bgc{stroke:#f1edff}
+  .ring .fgc{stroke:url(#ringGrad);transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.25,1)}
+  .ring-num{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .ring-num b{font-size:38px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .ring-num span{font-size:11.5px;letter-spacing:.16em;color:var(--muted);font-weight:700;margin-top:5px}
+  .res-icon{width:62px;height:62px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#fff}
+  .res-icon svg{width:31px;height:31px;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .res-eyebrow{font-size:12.5px;letter-spacing:.2em;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .res-name{font-size:33px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;line-height:1.25}
+  .res-sub{font-size:16px;color:var(--muted);margin:0 0 20px}
+  .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+  .chip{font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid}
+
+  .blocks{display:flex;flex-direction:column;gap:16px;text-align:left}
+  .blk{background:#fbfaff;border:1px solid #f1edff;border-radius:18px;padding:20px 22px}
+  .blk h4{margin:0 0 9px;font-size:14px;letter-spacing:.06em;font-weight:800;color:#5a4fb5;display:flex;align-items:center;gap:9px}
+  .blk h4::before{content:"";width:14px;height:2px;border-radius:2px;background:var(--primary);display:block;opacity:.55}
+  .blk p{margin:0;font-size:15px;color:#413a5c;line-height:1.75}
+
+  .rank{margin-top:34px;padding-top:28px;border-top:1px dashed var(--line)}
+  .rank h3{margin:0 0 6px;font-size:17px;font-weight:800}
+  .rank .note{font-size:13px;color:var(--muted);margin:0 0 20px}
+  .rk{display:flex;align-items:center;gap:13px;margin-bottom:13px}
+  .rk .nm{flex:0 0 96px;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk .bar{flex:1;height:10px;background:#f3f0fd;border-radius:99px;overflow:hidden}
+  .rk .bar i{display:block;height:100%;width:0;border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.25,1)}
+  .rk .pc{flex:0 0 44px;text-align:right;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+  .rk.first .nm{color:var(--primary)}
+  .floatbar{
+    position:sticky;bottom:0;margin-top:32px;padding:16px 0 6px;
+    background:linear-gradient(to top,#fff 62%,rgba(255,255,255,0));
+  }
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+    background:#231d3d;color:#fff;font-size:14px;font-weight:600;padding:12px 22px;border-radius:14px;
+    opacity:0;pointer-events:none;transition:.3s;z-index:99;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  .foot{text-align:center;font-size:12.5px;color:#b3acca;margin-top:26px;line-height:1.9}
+
+  @media (max-width:640px){
+    .wrap{padding:20px 15px 60px}
+    .card{padding:26px 20px;border-radius:22px}
+    h1{font-size:29px}
+    .qtext{font-size:20px}
+    .preview-grid{grid-template-columns:repeat(2,1fr)}
+    .res-name{font-size:26px}
+    .rk .nm{flex-basis:78px;font-size:13px}
+    .opt{padding:15px 16px;font-size:15px}
+  }
+</style>
+</head>
+<body>
+<div class="bg"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+
+<div class="wrap">
+
+  <!-- ============ 首页 ============ -->
+  <section class="screen active" id="s-intro">
+    <div class="card">
+      <div class="brand"><span class="dot"></span><span>LOVE MATCH LAB</span></div>
+      <h1>你适合什么样<br><span class="grad">类型的男朋友？</span></h1>
+      <p class="lead">25 道情境题，从相处节奏、情绪需求、安全感来源出发，测出和你最契合的男友类型，并给出完整的 8 类契合度排行。</p>
+
+      <div class="meta">
+        <span class="pill"><i></i>25 道题</span>
+        <span class="pill"><i></i>约 3 分钟</span>
+        <span class="pill"><i></i>8 种类型</span>
+        <span class="pill"><i></i>即时出结果</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="btn-start">开始测试</button>
+      </div>
+
+      <div class="preview-grid" id="preview"></div>
+    </div>
+    <p class="foot">本测试仅用于娱乐与自我了解，不构成任何心理学诊断。</p>
+  </section>
+
+  <!-- ============ 答题页 ============ -->
+  <section class="screen" id="s-quiz">
+    <div class="card">
+      <div class="topbar">
+        <div class="counter"><b id="cur">1</b>/ <span id="total">25</span></div>
+        <div class="hint" id="remain">还剩 25 题</div>
+      </div>
+      <div class="track"><i id="bar"></i></div>
+
+      <div id="qarea">
+        <span class="qtag" id="qtag">Q1</span>
+        <h2 class="qtext" id="qtext">题目</h2>
+        <div class="opts" id="opts"></div>
+      </div>
+
+      <div class="navrow">
+        <button class="back" id="btn-back" hidden>← 上一题</button>
+        <span class="hint" id="nudge"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 结果页 ============ -->
+  <section class="screen" id="s-result">
+    <div class="card">
+      <div class="res-head">
+        <svg width="0" height="0" aria-hidden="true"><defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#6c5ce7"/><stop offset="100%" stop-color="#ff6b9d"/>
+          </linearGradient>
+        </defs></svg>
+
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 150 150">
+            <circle class="bgc" cx="75" cy="75" r="62"></circle>
+            <circle class="fgc" id="ringfg" cx="75" cy="75" r="62"></circle>
+          </svg>
+          <div class="ring-num"><b id="pct">0</b><span>契合指数</span></div>
+        </div>
+
+        <div class="res-icon" id="resIcon"></div>
+        <div class="res-eyebrow">你的最佳男友类型</div>
+        <h2 class="res-name" id="resName"></h2>
+        <p class="res-sub" id="resSub"></p>
+        <div class="chips" id="resChips"></div>
+      </div>
+
+      <div class="blocks">
+        <div class="blk"><h4>他是这样的人</h4><p id="b1"></p></div>
+        <div class="blk"><h4>你们在一起的样子</h4><p id="b2"></p></div>
+        <div class="blk"><h4>需要留意的地方</h4><p id="b3"></p></div>
+        <div class="blk"><h4>推荐约会场景</h4><p id="b4"></p></div>
+      </div>
+
+      <div class="rank">
+        <h3>完整契合度排行</h3>
+        <p class="note">基于你 25 题的选择计算，条形长度为相对契合度。</p>
+        <div id="rankList"></div>
+      </div>
+
+      <div class="floatbar">
+        <div class="btn-row">
+          <button class="btn" id="btn-again">再测一次</button>
+          <button class="btn ghost" id="btn-copy">复制我的结果</button>
+        </div>
+      </div>
+    </div>
+    <p class="foot">本测试仅用于娱乐与自我了解，不构成任何心理学诊断。</p>
+  </section>
+
+</div>
+
+<div class="toast" id="toast">已复制到剪贴板</div>
+
+<script>
+/* =========================================================
+   类型定义
+   ========================================================= */
+const ICONS = {
+  sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.6M12 19.6v2.6M4.4 4.4l1.8 1.8M17.8 17.8l1.8 1.8M1.8 12h2.6M19.6 12h2.6M4.4 19.6l1.8-1.8M17.8 6.2l1.8-1.8"/>',
+  shield:'<path d="M12 2.2l8 3.6v6.1c0 4.9-3.4 8.6-8 9.9-4.6-1.3-8-5-8-9.9V5.8z"/><path d="M9 12.2l2.1 2.1L15.2 10"/>',
+  bolt:'<path d="M13.4 1.8L4.6 13.4h5.6L9.4 22.2l8.9-11.6h-5.6z"/>',
+  moon:'<path d="M20.4 14.6A8.7 8.7 0 019.4 3.6a8.7 8.7 0 1011 11z"/>',
+  bulb:'<path d="M9.4 18.2h5.2M10.4 21.6h3.2M12 2.2a6.1 6.1 0 00-3.7 11v2.2h7.4v-2.2A6.1 6.1 0 0012 2.2z"/>',
+  smile:'<circle cx="12" cy="12" r="9.2"/><path d="M8.2 13.8s1.5 2.2 3.8 2.2 3.8-2.2 3.8-2.2"/><path d="M9.2 9.4h.02M14.8 9.4h.02" stroke-width="2.6"/>',
+  mount:'<path d="M2.6 20.2h18.8L14.2 8.6l-2.8 4.6-2.2-3.4z"/>',
+  plane:'<path d="M21.4 2.6L10.8 13.2M21.4 2.6l-6.8 18.8-3.8-8.2-8.2-3.8z"/>'
+};
+
+const TYPES = {
+  WARM:{
+    name:'暖阳治愈型', sub:'你专属的情绪充电宝',
+    color:'#ff7f9c', grad:'linear-gradient(135deg,#ff9fb4,#ff6b9d)',
+    icon:'sun', tags:['情绪价值拉满','细水长流','包容度高'],
+    d1:'他是那种存在感不高、但没有他就不行的人。共情能力极强，你皱一下眉他都能察觉；不擅长说漂亮话，但会把"我在"两个字做给你看。他的温柔不是软弱，而是一种稳定的能力。',
+    d2:'和他在一起，你不用扮演任何人。可以素颜、可以摆烂、可以半夜三点说"我睡不着"，他都会认真回你。你们的关系像一间常年恒温的房间，不刺激，但推门就暖和。',
+    d3:'他容易把照顾好你当成全部任务，从而忽略自己。偶尔你会觉得缺少一点刺激和冲突感。要小心的是——不要把他的退让当成理所当然。',
+    d4:'一起逛菜市场买菜做饭、雨天窝在沙发上看一部老剧、周边小城的一日慢旅行、深夜的散漫聊天。'
+  },
+  ALPHA:{
+    name:'强势掌控型', sub:'自带气场的行动派男人',
+    color:'#3f3a63', grad:'linear-gradient(135deg,#5a537f,#2c2746)',
+    icon:'shield', tags:['决策力强','安全感爆棚','直球进攻'],
+    d1:'他很清楚自己要什么，也清楚怎么得到。讲话直接，不玩暧昧，喜欢你就是明牌；执行力惊人，你说"想去"他就已经在订票了。他身上有一种"事情交给我"的笃定。',
+    d2:'你几乎不用做决策，跟着走就行。他会把你圈进他的计划里，保护欲和占有欲都很强。在人群里，他永远能第一时间牵住你的手。',
+    d3:'控制欲和边界感是需要反复沟通的课题。你要够坚定地表达自己的需求，否则容易在被照顾的舒适里失去一部分主动权。',
+    d4:'他提前订好的高级餐厅、说走就走的短途旅行、赛车/演唱会前排、由他全程规划的周末。'
+  },
+  SUNNY:{
+    name:'阳光运动型', sub:'会发光的少年感本体',
+    color:'#f59433', grad:'linear-gradient(135deg,#ffb457,#f2892a)',
+    icon:'bolt', tags:['能量满格','阳光直球','少年感'],
+    d1:'他汗味里带着洗衣液的味道，笑起来眼睛会弯。精力像用不完，热爱运动、热爱生活，情绪来得快去得也快，不记仇。看到他，你会不自觉想把日子过得积极一点。',
+    d2:'和他在一起节奏很快，周末很少有躺着的时候。他会把你拉出门，拉着你去跑步、去爬山、去看比赛，你莫名其妙瘦了也开心了。',
+    d3:'他情绪颗粒度偏粗，可能不太能捕捉到你细腻的小情绪。你需要学会直说"我现在不太开心"，而不是等他猜。',
+    d4:'清晨的城市跑道、球场边的加油、爬山看日出、骑行去郊外、运动后一起吃的一顿大餐。'
+  },
+  ARTY:{
+    name:'文艺浪漫型', sub:'把普通日子过成诗的人',
+    color:'#9b6ce0', grad:'linear-gradient(135deg,#b58ff5,#8e5fd6)',
+    icon:'moon', tags:['浪漫颗粒','精神共鸣','敏感细腻'],
+    d1:'他的手机相册里全是光影、云、街角和你。他读诗、听独立音乐、看小众电影，会在很平常的一天突然送你一束花，理由只是"今天路过觉得很像你"。',
+    d2:'你们的对话常常会飘到很远的地方，从一部电影聊到童年，从童年聊到宇宙。相处的质感很高，连沉默都带着情绪。',
+    d3:'敏感是一把双刃剑，他容易内耗，也容易被情绪带走。当现实问题出现时，需要有人先把日子落地。',
+    d4:'美术馆和独立书店、黑胶唱片店、小剧场和Livehouse、有光的咖啡馆、夜晚的天台。'
+  },
+  BRAIN:{
+    name:'理性学霸型', sub:'什么都能搞定的聪明脑袋',
+    color:'#2f8fd8', grad:'linear-gradient(135deg,#5cb0ee,#2577c4)',
+    icon:'bulb', tags:['逻辑清晰','靠谱省心','共同成长'],
+    d1:'他话不多，但每句都在点上。擅长把混乱的局面拆成清晰的步骤，习惯用解决问题的方式表达关心——你抱怨工作，他会认真帮你分析职业路径。',
+    d2:'和他在一起很省心，大小事务他都能安排得井井有条。你们更像并肩打怪的搭档，会互相推着往前走。',
+    d3:'他的浪漫有时需要翻译。情绪需要被接住的时候，他可能先递来一个解决方案。直说"我不用建议，我就想被安慰一下"，他会学得很快。',
+    d4:'一起逛科技馆或博物馆、在家看纪录片、报同一个兴趣班、各自安静看书的下午、深夜的深度长谈。'
+  },
+  FUNNY:{
+    name:'幽默逗比型', sub:'24 小时不间断的快乐来源',
+    color:'#e8a70f', grad:'linear-gradient(135deg,#ffd05c,#e79a09)',
+    icon:'smile', tags:['氛围担当','零压力','有趣灵魂'],
+    d1:'他是永远能把气氛救活的人，擅长自嘲，脑子转得比嘴快。再糟糕的一天，他一句歪理就能把你逗笑。他的快乐是真诚的，不是强撑的。',
+    d2:'你们的日常素材足够做一档综艺。吵架也吵不了太久，因为他总能用奇怪的角度把你逗乐。相处几乎零压力，就是单纯很开心。',
+    d3:'"好笑"不能替代"可靠"。遇到严肃问题（金钱、未来、家人）时，如果他也用玩笑躲开，你会感到不安。需要明确告诉他哪些事必须认真谈。',
+    d4:'逛夜市和路边摊、密室逃脱、看喜剧演出、在家打游戏互相坑、无目的的街头乱走。'
+  },
+  MATURE:{
+    name:'成熟稳重型', sub:'可以放心把后背交给他的人',
+    color:'#31a06a', grad:'linear-gradient(135deg,#5cc294,#26885a)',
+    icon:'mount', tags:['情绪稳定','边界清晰','长期主义'],
+    d1:'他不抢话、不炫耀、不着急。见过一些事，所以对大部分事情都反应温和。答应的事一定做到，做不到的当场就说。和他相处最大的感受是"踏实"。',
+    d2:'你们各自有各自的生活，也都能安心地依靠对方。他尊重你的空间，也给得起长久的确定性。没有过山车式的心跳，但有细水长流的安全。',
+    d3:'他表达爱意的方式偏克制，热恋期的不确定性刺激感会比较少。如果你强烈需要高频的甜言蜜语，需要提前对齐预期。',
+    d4:'安静的周末早午餐、两个人一起做饭和整理家、博物馆和展览、短途自驾、对未来做具体规划的长谈。'
+  },
+  FREE:{
+    name:'自由冒险型', sub:'随时带你逃离无聊的探险家',
+    color:'#12a8a0', grad:'linear-gradient(135deg,#45c9c0,#0b9189)',
+    icon:'plane', tags:['好奇心强','不受束缚','新鲜感制造机'],
+    d1:'他不太喜欢被安排，行李箱常年处于半开状态。对世界有旺盛的好奇心，会潜水、会迷路、会在陌生的城市带你吃一碗最地道的面。',
+    d2:'和他在一起没有重复的一天。你的舒适区会被一点点撑大，你会发现自己原来可以这么勇敢。关系里充满新鲜的空气。',
+    d3:'稳定性需要额外建立。他讨厌被追问"我们以后怎么办"，需要用共同的经历而不是承诺来锚定关系。安全感要靠一起创造。',
+    d4:'说走就走的旅行、自驾露营看星星、潜水滑雪跳伞、在陌生城市迷路、住一次没查过评价的民宿。'
+  }
+};
+const ORDER = ['WARM','ALPHA','SUNNY','ARTY','BRAIN','FUNNY','MATURE','FREE'];
+
+/* =========================================================
+   题库：25 题
+   ========================================================= */
+const QS = [
+ {q:'周末一整天完全自由，你最想怎么过？',o:[
+   ['待在家里看剧点外卖，有人陪着就好',{WARM:3,MATURE:1}],
+   ['去健身房或者打一场球，出一身汗',{SUNNY:3,FREE:1}],
+   ['逛美术馆、看展、听一场音乐会',{ARTY:3}],
+   ['说走就走，开车去一个没去过的地方',{FREE:3,SUNNY:1}]]},
+
+ {q:'你心情非常差的时候，最希望他怎么对你？',o:[
+   ['什么都不问，先把肩膀借给你',{WARM:3}],
+   ['直接拉你出门吃好吃的，把烦恼赶走',{FUNNY:2,SUNNY:1}],
+   ['理性帮你分析问题，理清思路',{BRAIN:3}],
+   ['让你自己待着，需要的时候他就在',{MATURE:3,FREE:1}]]},
+
+ {q:'哪种开场白最让你心动？',o:[
+   ['"今天天气很好，突然很想你"',{ARTY:2,WARM:1}],
+   ['"明晚的位置我订好了，跟我走"',{ALPHA:3}],
+   ['"考你一个问题，答对有奖励"',{BRAIN:3}],
+   ['"我刚看到一个巨好笑的事，憋不住了"',{FUNNY:3}]]},
+
+ {q:'和他一起看电影，你更想是哪种？',o:[
+   ['安静的文艺片，看完还能聊很久',{ARTY:3,BRAIN:1}],
+   ['紧张的动作片，害怕时能抓他的手',{ALPHA:2,SUNNY:1}],
+   ['喜剧片，两个人笑到肚子疼',{FUNNY:2,WARM:1}],
+   ['恐怖片，可以名正言顺往他怀里钻',{WARM:1,ALPHA:2}]]},
+
+ {q:'他送你的礼物，你最心动的是？',o:[
+   ['一件很贵的东西，喜欢就直接买下来',{ALPHA:3}],
+   ['一本写满批注的书，划线都是给你的',{ARTY:2,BRAIN:2}],
+   ['亲手做的一顿饭',{WARM:3}],
+   ['两张说走就走的机票',{FREE:3}]]},
+
+ {q:'你最受不了男生的哪一点？',o:[
+   ['太黏人，完全没有自己的空间',{FREE:3,MATURE:1}],
+   ['情商低，听不懂我在难过什么',{WARM:2,ARTY:1}],
+   ['不上进，天天躺着没有目标',{ALPHA:2,BRAIN:2}],
+   ['太严肃，一点玩笑都开不起',{FUNNY:3}]]},
+
+ {q:'理想中的见面频率是？',o:[
+   ['天天都想见，一分开就想念',{WARM:3}],
+   ['一周两三次，各自过好各自的生活',{MATURE:3,FREE:1}],
+   ['想见就见，不太喜欢被规定',{FREE:3}],
+   ['每次见面都得安排点新鲜事',{SUNNY:3,FUNNY:1}]]},
+
+ {q:'你们吵架了，你希望他怎么做？',o:[
+   ['先道歉，不管谁对谁错',{WARM:2,ALPHA:1}],
+   ['冷静下来讲道理，谁对听谁的',{BRAIN:2,MATURE:2}],
+   ['用一句玩笑把气氛缓和下来',{FUNNY:3}],
+   ['给彼此空间，等愿意说了再聊',{MATURE:2,FREE:2}]]},
+
+ {q:'你觉得男生最有魅力的瞬间是？',o:[
+   ['专注做事时的侧脸',{BRAIN:2,MATURE:2}],
+   ['在球场上奔跑、浑身是汗的样子',{SUNNY:3}],
+   ['下雨天为你跑过来的样子',{ARTY:2,WARM:1}],
+   ['在人群里一眼锁定你，牵起你的手',{ALPHA:3}]]},
+
+ {q:'理想的周末早餐是？',o:[
+   ['他早起做好的一桌早餐',{WARM:3}],
+   ['一起出门吃一顿慢慢悠悠的早午餐',{SUNNY:3}],
+   ['睡到中午，点外卖在床上吃',{FUNNY:2,FREE:1}],
+   ['边吃边听他讲最近在忙的事',{ALPHA:2,BRAIN:2}]]},
+
+ {q:'如果你要一个人出国一段时间，你希望他？',o:[
+   ['想办法陪你一起去',{FREE:2,WARM:1}],
+   ['把路线、攻略、备用方案全部做好',{BRAIN:2,MATURE:2}],
+   ['说"去吧，我等你回来"',{MATURE:3}],
+   ['直接发来一张他自己的机票',{ALPHA:3}]]},
+
+ {q:'哪种夸赞最让你受用？',o:[
+   ['"你今天的想法很有意思"',{BRAIN:2,ARTY:1}],
+   ['"你笑起来真好看"',{ARTY:2,WARM:1}],
+   ['"你比我想象中还要厉害"',{ALPHA:2,SUNNY:1}],
+   ['"跟你在一起就没有无聊的时候"',{FUNNY:3}]]},
+
+ {q:'你希望他手机里最多的是哪种内容？',o:[
+   ['你们的合照和聊天记录',{WARM:2,ARTY:1}],
+   ['运动数据和健身App',{SUNNY:3}],
+   ['各种笔记、知识和行业资料',{BRAIN:3}],
+   ['全世界各地的照片',{FREE:3}]]},
+
+ {q:'关于官宣，你更喜欢哪一种？',o:[
+   ['一张很自然的日常合照',{MATURE:2,WARM:1}],
+   ['看展或看演出时的合影',{ARTY:3}],
+   ['一段很有梗的文案',{FUNNY:2,ARTY:1}],
+   ['海边牵手、逆光的背影照',{FREE:2,SUNNY:1}]]},
+
+ {q:'你更希望他怎么称呼你？',o:[
+   ['小笨蛋、小朋友这种',{ALPHA:2,WARM:1}],
+   ['直接叫名字，干净利落',{MATURE:3}],
+   ['一些奇奇怪怪只有他叫的外号',{FUNNY:3}],
+   ['一个专门为你取的昵称',{ARTY:3}]]},
+
+ {q:'最想和他一起做的一件事是？',o:[
+   ['一起养一只猫或狗',{WARM:3}],
+   ['一起报一个兴趣班，从零学点什么',{BRAIN:2,ARTY:1}],
+   ['一起跑一次半马或全马',{SUNNY:3}],
+   ['去一个语言完全不通的国家',{FREE:3}]]},
+
+ {q:'他最近工作特别忙，你会？',o:[
+   ['理解，但希望他别忘了回消息',{MATURE:2,WARM:1}],
+   ['完全理解，各自忙各自的',{MATURE:3,BRAIN:1}],
+   ['主动帮他一起理清优先级',{BRAIN:2,MATURE:1}],
+   ['有点受不了，希望他多分点时间给我',{ALPHA:2,FUNNY:1}]]},
+
+ {q:'你觉得一段感情里最重要的是？',o:[
+   ['稳定和安全感',{MATURE:3}],
+   ['能一起成长，越变越好',{BRAIN:2,MATURE:1}],
+   ['每天都开开心心',{FUNNY:2,SUNNY:1}],
+   ['自由，以及永远的新鲜感',{FREE:3}]]},
+
+ {q:'你更喜欢的男生穿搭是？',o:[
+   ['干净的衬衫，简约得体',{MATURE:3}],
+   ['运动风，随时能去跑两圈',{SUNNY:3}],
+   ['有设计感的小众品牌',{ARTY:3}],
+   ['怎么舒服怎么来，不太在意',{FREE:2,FUNNY:1}]]},
+
+ {q:'一起去旅行，你希望是哪种模式？',o:[
+   ['他全程安排好，你只负责玩',{ALPHA:3,MATURE:1}],
+   ['一起做攻略，分工合作',{BRAIN:2,SUNNY:1}],
+   ['不做计划，走到哪算哪',{FREE:3}],
+   ['每天都有新的项目和体验',{SUNNY:3,FUNNY:1}]]},
+
+ {q:'你最希望他怎么表达喜欢你？',o:[
+   ['直接说，说很多遍',{WARM:3}],
+   ['不太说，但每件事都替你考虑到',{MATURE:3}],
+   ['写很长的一段话给你',{ARTY:3}],
+   ['用各种拐弯抹角的方式暗示',{FUNNY:2,ARTY:1}]]},
+
+ {q:'如果你生病躺着，你希望他？',o:[
+   ['立刻冲过来照顾你',{WARM:2,ALPHA:2}],
+   ['把药和热粥点好送到门口',{BRAIN:2,MATURE:2}],
+   ['一直发消息陪你聊天解闷',{FUNNY:2,WARM:1}],
+   ['尊重你想一个人待着的想法',{FREE:2,MATURE:1}]]},
+
+ {q:'你最想要的恋爱状态是？',o:[
+   ['像朋友一样，有说不完的话',{FUNNY:2,SUNNY:1}],
+   ['像搭档一样，一起打怪升级',{ALPHA:2,BRAIN:1}],
+   ['像阳光一样，每天都被治愈',{SUNNY:3,WARM:1}],
+   ['像风一样，随时能一起出发',{FREE:3}]]},
+
+ {q:'他身上哪个点最加分？',o:[
+   ['有主见，能替你把决定做了',{ALPHA:3}],
+   ['有个有趣的灵魂',{FUNNY:2,ARTY:1}],
+   ['有强健的体魄和好精力',{SUNNY:3}],
+   ['有丰富而细腻的内心世界',{ARTY:3}]]},
+
+ {q:'最后一题，你更相信哪句话？',o:[
+   ['陪伴是最长情的告白',{WARM:3,MATURE:1}],
+   ['好的爱情让人变得更好',{BRAIN:3}],
+   ['爱就要轰轰烈烈',{ALPHA:2,FREE:1}],
+   ['有趣的灵魂万里挑一',{FUNNY:3,ARTY:1}]]}
+];
+
+/* =========================================================
+   逻辑
+   ========================================================= */
+const TOTAL = QS.length;
+const answers = new Array(TOTAL).fill(null);
+let idx = 0;
+const $ = id => document.getElementById(id);
+const LETTERS = ['A','B','C','D','E'];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* 首页类型预览 */
+function renderPreview(){
+  const box = $('preview');
+  ORDER.forEach(k=>{
+    const t = TYPES[k];
+    const el = document.createElement('div');
+    el.className='pv';
+    el.innerHTML = '<svg viewBox="0 0 24 24" stroke="'+t.color+'">'+ICONS[t.icon]+'</svg><b style="color:'+t.color+'">'+t.name+'</b>';
+    box.appendChild(el);
+  });
+}
+
+/* 渲染题目 */
+function renderQ(){
+  const item = QS[idx];
+  $('cur').textContent = idx+1;
+  $('total').textContent = TOTAL;
+  $('qtag').textContent = 'Q' + (idx+1);
+  $('qtext').textContent = item.q;
+  $('bar').style.width = ((idx)/TOTAL*100) + '%';
+  $('remain').textContent = '还剩 ' + (TOTAL-idx) + ' 题';
+  $('nudge').textContent = '';
+
+  const box = $('opts');
+  box.innerHTML = '';
+  item.o.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt' + (answers[idx]===i ? ' sel' : '');
+    b.innerHTML = '<span class="k">'+LETTERS[i]+'</span><span>'+opt[0]+'</span>';
+    b.onclick = ()=>choose(i);
+    box.appendChild(b);
+  });
+
+  $('btn-back').hidden = (idx===0);
+
+  // 题目切换动画
+  const area = $('qarea');
+  area.style.animation='none';
+  void area.offsetWidth;
+  area.style.animation='fadeUp .38s cubic-bezier(.2,.8,.25,1) both';
+}
+
+let locked = false;
+function choose(i){
+  if(locked) return;
+  locked = true;
+  answers[idx] = i;
+  const nodes = $('opts').querySelectorAll('.opt');
+  nodes.forEach(n=>n.classList.remove('sel'));
+  nodes[i].classList.add('sel');
+  $('bar').style.width = ((idx+1)/TOTAL*100) + '%';
+
+  setTimeout(()=>{
+    locked = false;
+    if(idx < TOTAL-1){
+      idx++;
+      renderQ();
+    }else{
+      score();
+    }
+  }, 240);
+}
+
+/* 计算得分 */
+function score(){
+  const s = {}; ORDER.forEach(k=>s[k]=0);
+  answers.forEach((a,qi)=>{
+    if(a===null) return;
+    const w = QS[qi].o[a][1];
+    for(const k in w) s[k] += w[k];
+  });
+
+  const total = ORDER.reduce((n,k)=>n+s[k],0) || 1;
+  const ranked = ORDER.map(k=>({k, v:s[k], r:s[k]/total}))
+                      .sort((a,b)=> b.v-a.v);
+
+  const top = ranked[0];
+  const pctRaw = 60 + (top.r - 0.125) * 200;
+  const pct = Math.max(62, Math.min(97, Math.round(pctRaw)));
+
+  renderResult(top.k, pct, ranked);
+}
+
+function renderResult(key, pct, ranked){
+  const t = TYPES[key];
+  $('resIcon').style.background = t.grad;
+  $('resIcon').innerHTML = '<svg viewBox="0 0 24 24" stroke="#fff">'+ICONS[t.icon]+'</svg>';
+  $('resName').textContent = t.name;
+  $('resName').style.color = t.color;
+  $('resSub').textContent = t.sub;
+
+  $('resChips').innerHTML = t.tags.map(tag =>
+    '<span class="chip" style="color:'+t.color+';border-color:'+t.color+'33;background:'+t.color+'0f">'+tag+'</span>'
+  ).join('');
+
+  $('b1').textContent = t.d1;
+  $('b2').textContent = t.d2;
+  $('b3').textContent = t.d3;
+  $('b4').textContent = t.d4;
+
+  // 排名条
+  const list = $('rankList');
+  list.innerHTML = '';
+  const max = ranked[0].v || 1;
+  ranked.forEach((row,i)=>{
+    const T = TYPES[row.k];
+    const w = Math.max(6, Math.round(row.v/max*100));
+    const el = document.createElement('div');
+    el.className = 'rk' + (i===0?' first':'');
+    el.innerHTML =
+      '<div class="nm">'+T.name+'</div>'+
+      '<div class="bar"><i style="background:'+T.grad+'"></i></div>'+
+      '<div class="pc">'+w+'%</div>';
+    list.appendChild(el);
+    const fill = el.querySelector('.bar i');
+    setTimeout(()=>{ fill.style.width = w+'%'; }, 90 + i*80);
+  });
+
+  show('s-result');
+
+  // 环形动画
+  const R = 62, C = 2*Math.PI*R;
+  const ring = $('ringfg');
+  ring.style.strokeDasharray = C;
+  ring.style.strokeDashoffset = C;
+  setTimeout(()=>{ ring.style.strokeDashoffset = C*(1-pct/100); }, 120);
+
+  // 数字滚动
+  const num = $('pct');
+  let cur = 0;
+  const step = Math.max(1, Math.ceil(pct/28));
+  const timer = setInterval(()=>{
+    cur += step;
+    if(cur >= pct){ cur = pct; clearInterval(timer); }
+    num.textContent = cur;
+  }, 32);
+
+  window.__resultText = '我的男友类型测试结果：《' + t.name + '》— ' + t.sub +
+    '｜契合指数 ' + pct + '%\n完整排行：' +
+    ranked.map((r,i)=>(i+1)+'. '+TYPES[r.k].name).join('  ');
+}
+
+/* 事件绑定 */
+$('btn-start').onclick = ()=>{
+  idx = 0;
+  answers.fill(null);
+  renderQ();
+  show('s-quiz');
+};
+$('btn-back').onclick = ()=>{
+  if(idx>0){ idx--; renderQ(); }
+};
+$('btn-again').onclick = ()=>{
+  idx = 0;
+  answers.fill(null);
+  show('s-intro');
+};
+$('btn-copy').onclick = async ()=>{
+  const txt = window.__resultText || '';
+  try{
+    await navigator.clipboard.writeText(txt);
+    toast('已复制到剪贴板');
+  }catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); toast('已复制到剪贴板'); }
+    catch(err){ toast('复制失败，请手动选择文本'); }
+    document.body.removeChild(ta);
+  }
+};
+function toast(msg){
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'), 1800);
+}
+
+renderPreview();
+</script>
+</body>
+</html>
